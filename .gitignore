@@ -136,4 +136,4 @@ dist
 .pnp.*
 
 user_data/
-clowd.db
+*.db
