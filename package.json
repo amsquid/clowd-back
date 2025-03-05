@@ -8,8 +8,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "nodemon dist/index.js",
+    "start": "node dist/src/index.js",
+    "dev": "nodemon dist/src/index.js",
     "test": "jest"
   },
   "dependencies": {
