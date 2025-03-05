@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { Database, OPEN_READWRITE } from "sqlite3";
-import { existsSync, writeFile } from "fs";
+import * as fs from "fs";
 
 const auth = require("./authentication");
 const cors = require("cors");
@@ -11,8 +11,11 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3000;
 const dbFilename = process.env.db_file || "clowd.db";
+const userFolder = process.env.user_folder || "user_data";
 
-if (!existsSync(dbFilename)) writeFile(dbFilename, "", () => {});
+if (!fs.existsSync(dbFilename)) fs.writeFile(dbFilename, "", () => {});
+if (!fs.existsSync(userFolder)) fs.mkdir(userFolder, () => {});
+
 const db = new Database(dbFilename, OPEN_READWRITE);
 
 db.exec(`
