@@ -34,7 +34,7 @@ async function authenticate(
 							const token: string = crypto.randomBytes(64).toString("base64");
 							resolve(token);
 						} else {
-							resolve("");
+							reject("Invalid password");
 						}
 					}
 				);
@@ -65,8 +65,25 @@ async function registerUser(
 					return;
 				}
 
-				resolve(false);
-				return;
+				reject("Username in use");
+			}
+		);
+	});
+}
+
+async function getUserFromToken(token: string, db: Database): Promise<string> {
+	return new Promise((resolve, reject) => {
+		db.get(
+			"SELECT * FROM users WHERE login_id = ?",
+			[token],
+			(error: Error, rows: any) => {
+				if (rows === undefined) {
+					reject("Invalid token");
+					return;
+				}
+
+				const username: string = rows["username"];
+				resolve(username);
 			}
 		);
 	});
@@ -75,4 +92,5 @@ async function registerUser(
 module.exports = {
 	authenticate,
 	registerUser,
+	getUserFromToken,
 };

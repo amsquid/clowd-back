@@ -59,3 +59,19 @@ test("login validated", async () => {
 	const token: string = await auth.authenticate(username, password, db);
 	expect(token).not.toBe("");
 });
+
+test("got user token", async () => {
+	const token: string = await new Promise<string>((resolve, reject) => {
+		db.get(
+			"SELECT * FROM users WHERE username=?",
+			[username],
+			(error: Error | null, row: any) => {
+				if (error) reject(error);
+				else resolve(row["login_id"]);
+			}
+		);
+	});
+
+	const gottenUsername: string = await auth.getUserFromToken(token, db);
+	expect(gottenUsername).toBe(username);
+});

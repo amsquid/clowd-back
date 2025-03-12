@@ -38,17 +38,15 @@ app.post("/login", (req: Request, res: Response) => {
 	const password = req.body.password;
 
 	(async () => {
-		const token: string = await auth.authenticate(username, password, db);
-		const authenticated: boolean = token !== "";
-
-		if (authenticated) {
+		try {
+			const token: string = await auth.authenticate(username, password, db);
 			db.run("UPDATE users SET login_id=? WHERE username=?", [token, username]);
 
 			res.status(200);
 			res.send({ "logged-in": true, token: token });
-		} else {
+		} catch (error) {
 			res.status(401);
-			res.send({ "logged-in": false });
+			res.send({ "logged-in": false, error: error });
 		}
 	})();
 });
@@ -58,15 +56,37 @@ app.post("/register", (req: Request, res: Response) => {
 	const password = req.body.password;
 
 	(async () => {
-		const valid = await auth.registerUser(username, password, db);
+		try {
+			const valid = await auth.registerUser(username, password, db);
 
-		if (valid) {
 			res.status(200);
-		} else {
+			res.send({ registered: true });
+		} catch (error) {
 			res.status(418);
+			res.send({ registered: false, error: error });
 		}
+	})();
+});
 
-		res.send({ registered: valid });
+app.get("/list-files", (req: Request, res: Response) => {
+	const token: string = req.body.token;
+
+	(async () => {
+		try {
+			const username = await auth.getUserFromToken(token, db);
+			let filenames = {};
+
+			fs.readdir(
+				process.cwd() + "/user_data/" + username + "/",
+				(err: NodeJS.ErrnoException | null, files: string[]) => {
+					res.status(200);
+					res.send({ files: files });
+				}
+			);
+		} catch (error) {
+			res.status(400);
+			res.send({ error: error });
+		}
 	})();
 });
 
