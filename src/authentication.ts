@@ -1,6 +1,7 @@
 import { Database, sqlite3 } from "sqlite3";
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
+import { mkdir } from "fs";
 
 const saltRounds = 12;
 
@@ -59,6 +60,7 @@ async function registerUser(
 						"INSERT INTO users (username, password) VALUES (?, ?);";
 
 					db.run(insertSql, [username, hashedPassword]);
+					mkdir("user_data/" + username, () => {});
 					resolve(true);
 					return;
 				}
