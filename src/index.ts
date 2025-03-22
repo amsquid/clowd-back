@@ -68,7 +68,7 @@ app.post("/register", (req: Request, res: Response) => {
 	})();
 });
 
-app.get("/list-files", (req: Request, res: Response) => {
+app.post("/list-files", (req: Request, res: Response) => {
 	const token: string = req.body.token;
 
 	(async () => {
